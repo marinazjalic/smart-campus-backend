@@ -1,5 +1,4 @@
 const Room = require("../models/rooms");
-const availabilityController = require("./availabilityController");
 
 const getAllRooms = async (req, res) => {
   return Room.find()

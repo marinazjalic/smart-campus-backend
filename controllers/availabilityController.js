@@ -122,7 +122,6 @@ const modifyAvailability = (result, req, res) => {
     }
     //case where end time is on or after midnight
     else if (start_time > end_time) {
-      console.log("shouldnt be here");
       for (let i = start_time; i < 24; i += 0.5) {
         added_times.push(i);
       }
@@ -270,7 +269,6 @@ const filterForAvailableRooms = (req, res) => {
 
 const getTimezoneOffset = (year, month, day) => {
   let offset = 0;
-  console.log(year, month, day);
 
   if (year == "2023" && month == "11" && Number(day) > 5) {
     offset = 5;

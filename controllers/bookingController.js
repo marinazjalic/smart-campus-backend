@@ -53,7 +53,7 @@ const getUserBookings = (req, res) => {
   const currentDate = new Date();
   const offset = availabilityController.getTimezoneOffset(
     currentDate.getFullYear().toString(),
-    currentDate.getMonth().toString(),
+    (currentDate.getMonth() + 1).toString(),
     currentDate.getDate()
   );
   currentDate.setHours(currentDate.getHours() - offset);
@@ -77,7 +77,6 @@ const getUserBookings = (req, res) => {
 //returns true if deleted
 const deleteBooking = (req, res) => {
   Booking.deleteOne({ _id: req.query.id }).then((result) => {
-    console.log(result.deletedCount);
     if (result.deletedCount == 1) {
       res.status(200).send(true);
     } else {
@@ -86,8 +85,46 @@ const deleteBooking = (req, res) => {
   });
 };
 
+//returns number of hours the user has booked for a given day
+//ensures user doesn't go over 3 hour max per day
+const getBookingHoursPerDay = (req, res) => {
+  const parsedDate = req.query.date.toString().split("T");
+  let totalHours = 0;
+
+  const startDate = new Date(parsedDate[0]);
+  const endDate = new Date(parsedDate[0] + "T23:59:59Z");
+  let query = {
+    user_id: req.query.user_id,
+    date: { $gte: startDate, $lte: endDate },
+  };
+
+  Booking.find(query)
+    .then((result) => {
+      for (let i = 0; i < result.length; i++) {
+        let startTime = availabilityController.time_conversion(
+          result[i].start_time
+        );
+        let endTime = availabilityController.time_conversion(
+          result[i].end_time
+        );
+        if (endTime > startTime) {
+          totalHours += endTime - startTime;
+        } else {
+          let sessionTime = 24 - startTime;
+          sessionTime + endTime;
+          totalHours += sessionTime;
+        }
+      }
+      res.status(200).send(totalHours.toString());
+    })
+    .catch((error) => {
+      res.status(500).send("Failed to get booking hours for user.");
+    });
+};
+
 module.exports = {
   getAllBookings,
+  getBookingHoursPerDay,
   getUserBookings,
   createBooking,
   deleteBooking,
