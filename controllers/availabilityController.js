@@ -244,11 +244,13 @@ const filterForAvailableRooms = (req, res) => {
     parsedDate[0],
     parsedDate[1] - 1,
     parsedDate[2],
-    0 - offset,
+    0 - 5,
     0,
     0,
     0
   );
+
+  console.log(date);
 
   const query = {
     date: date,
@@ -275,6 +277,8 @@ const getTimezoneOffset = (year, month, day) => {
   } else {
     offset = 4;
   }
+  //handle this offset differently - needs to work for all months
+  console.log("offset = " + offset);
   return offset;
 };
 

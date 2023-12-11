@@ -78,6 +78,7 @@ const getUserBookings = (req, res) => {
 const deleteBooking = (req, res) => {
   Booking.deleteOne({ _id: req.query.id }).then((result) => {
     if (result.deletedCount == 1) {
+      console.log("Reached");
       res.status(200).send(true);
     } else {
       res.status(500).send(false);
